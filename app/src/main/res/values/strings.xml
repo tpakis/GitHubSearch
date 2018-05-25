@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GitHub Search</string>
+    <string name="search">Search</string>
+    <string name="empty_image">No repositories to show</string>
+    <string name="error_fetching">Error fetching online images</string>
+    <string name="error_no_results">No results for this query</string>
+    <string name="owner_image">Owner image</string>
+    <string name="fork_image">Number of forks</string>
+</resources>
