@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,7 @@ import com.github.aithanasakis.githubsearch.application.Constants;
 import com.github.aithanasakis.githubsearch.model.GitRepository;
 import com.github.aithanasakis.githubsearch.model.basic.Resource;
 import com.github.aithanasakis.githubsearch.model.basic.Status;
+import com.github.aithanasakis.githubsearch.ui.details.DetailsFragment;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, MainRvAdapter.MainRvAdapterOnClickHandler{
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, MainRvAdapter.MainRvAdapterOnClickHandler {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -66,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         setSupportActionBar(mToolbar);
 
         //setup recyclerview
-        mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
+        mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewRepositoriesList.setLayoutManager(mLinearLayoutManager);
-        mMainAdapter = new MainRvAdapter(this,MainActivity.this);
+        mMainAdapter = new MainRvAdapter(this, MainActivity.this);
         recyclerViewRepositoriesList.setAdapter(mMainAdapter);
         pullToRefresh.setOnRefreshListener(this);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerViewRepositoriesList.getContext(),
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 //check status
                 if (repositories.status != Status.LOADING) {
                     pullToRefresh.setRefreshing(false);
-                    if (repositories.status == Status.ERROR){
+                    if (repositories.status == Status.ERROR) {
                         showError(repositories.message);
                     }
                 }
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         });
     }
+
     //compare the shown list with the downloaded list to check if the recycler needs to refresh
     public boolean compareLists(List<GitRepository> baseList, List<GitRepository> newList) {
         boolean areSame = true;
@@ -143,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public void onClick(GitRepository selectedRepository) {
         viewModel.setSelectedRepository(selectedRepository);
         Timber.d(selectedRepository.toString());
+        showSelectedRepository();
     }
 
     @Override
@@ -169,8 +173,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         viewModel.getData(true);
     }
 
-    private void showError(String message){
+    private void showError(String message) {
         message = (message.equals(Constants.SUCCESSCODE)) ? errorNoResults : errorFetching;
-        Snackbar.make(mainContent,message,Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mainContent, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void showSelectedRepository() {
+        FragmentManager fm = getSupportFragmentManager();
+        DetailsFragment detailsDialogFragment = DetailsFragment.newInstance();
+        detailsDialogFragment.show(fm, "fragment_edit_name");
     }
 }

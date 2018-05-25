@@ -21,7 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public class AppRepository implements IRepository{
+public class AppRepository implements IRepository {
     private GitHubDAO gitHubDAO;
     private GitHubApi gitHubApi;
     private MutableLiveData<Resource<List<GitRepository>>> repositoriesListObservable = new MutableLiveData<Resource<List<GitRepository>>>();
@@ -29,22 +29,22 @@ public class AppRepository implements IRepository{
     private Status pendingStatus;
 
     @Inject
-    public AppRepository(GitHubDAO gitHubDAO, GitHubApi gitHubApi){
-        this.gitHubDAO=gitHubDAO;
-        this.gitHubApi=gitHubApi;
+    public AppRepository(GitHubDAO gitHubDAO, GitHubApi gitHubApi) {
+        this.gitHubDAO = gitHubDAO;
+        this.gitHubApi = gitHubApi;
     }
 
-    public void fetchData(String query, boolean online){
+    public void fetchData(String query, boolean online) {
         pendingStatus = Status.LOADING;
         //check if we want online data
         if (online) {
             getRecipesFromWeb(query);
-        }else{
+        } else {
             loadAllRecipesFromDB();
         }
     }
 
-    public void fetchSubscribers(String url){
+    public void fetchSubscribers(String url) {
         getSubcribersFromWeb(url);
     }
 
@@ -52,7 +52,7 @@ public class AppRepository implements IRepository{
         Timber.d("loadAllRecipesFromDB");
         new AsyncTask<Void, Void, List<GitRepository>>() {
             @Override
-            protected List<GitRepository> doInBackground(Void...a) {
+            protected List<GitRepository> doInBackground(Void... a) {
                 return gitHubDAO.getAllEntries();
             }
 
@@ -65,17 +65,17 @@ public class AppRepository implements IRepository{
     }
 
 
-    private void getRecipesFromWeb(String query){
+    private void getRecipesFromWeb(String query) {
         Timber.d("getRecipesFromWeb");
         gitHubApi.getRepositories(query).enqueue(new Callback<List<GitRepository>>() {
             @Override
             public void onResponse(Call<List<GitRepository>> call, Response<List<GitRepository>> response) {
-                if (response.isSuccessful() && response.body()!= null && response.body().size() > 0) {
+                if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
                     pendingStatus = Status.SUCCESS;
                     addRecipesToDB(response.body());
                 } else {
                     // error case
-                    setRecipesListObservableStatus(Status.ERROR,String.valueOf(response.code()));
+                    setRecipesListObservableStatus(Status.ERROR, String.valueOf(response.code()));
                     switch (response.code()) {
                         case 404:
                             Timber.d("not found");
@@ -92,6 +92,7 @@ public class AppRepository implements IRepository{
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<List<GitRepository>> call, Throwable t) {
                 setRecipesListObservableStatus(Status.ERROR, t.getMessage());
@@ -99,12 +100,12 @@ public class AppRepository implements IRepository{
         });
     }
 
-    private void getSubcribersFromWeb(String url){
+    private void getSubcribersFromWeb(String url) {
         Timber.d("getRecipesFromWeb");
         gitHubApi.getUsers(url).enqueue(new Callback<List<GitOwner>>() {
             @Override
             public void onResponse(Call<List<GitOwner>> call, Response<List<GitOwner>> response) {
-                if (response.isSuccessful() && response.body()!= null && response.body().size() > 0) {
+                if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
                     subscribersListObservable.setValue(response.body());
                 } else {
                     // error case
@@ -125,6 +126,7 @@ public class AppRepository implements IRepository{
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<List<GitOwner>> call, Throwable t) {
                 subscribersListObservable.setValue(null);
@@ -165,8 +167,9 @@ public class AppRepository implements IRepository{
 
     /**
      * This method changes the observable's LiveData data without changing the status
+     *
      * @param mRepositoriesList the data that need to be updated
-     * @param message optional message for error
+     * @param message           optional message for error
      */
     private void setRecipesListObservableData(List<GitRepository> mRepositoriesList, String message) {
         Status loadingStatus = pendingStatus;
@@ -178,7 +181,7 @@ public class AppRepository implements IRepository{
                 repositoriesListObservable.setValue(Resource.loading(mRepositoriesList));
                 break;
             case ERROR:
-                repositoriesListObservable.setValue(Resource.error(message,mRepositoriesList));
+                repositoriesListObservable.setValue(Resource.error(message, mRepositoriesList));
                 break;
             case SUCCESS:
                 repositoriesListObservable.setValue(Resource.success(mRepositoriesList));
@@ -188,13 +191,14 @@ public class AppRepository implements IRepository{
 
     /**
      * This method changes the observable's LiveData status without changing the data
-     * @param status The new status of LiveData
+     *
+     * @param status  The new status of LiveData
      * @param message optional message for error
      */
     private void setRecipesListObservableStatus(Status status, String message) {
         List<GitRepository> loadingList = null;
-        if (repositoriesListObservable.getValue()!=null){
-            loadingList=repositoriesListObservable.getValue().data;
+        if (repositoriesListObservable.getValue() != null) {
+            loadingList = repositoriesListObservable.getValue().data;
         }
         switch (status) {
             case ERROR:

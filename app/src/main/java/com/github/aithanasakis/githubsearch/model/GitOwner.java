@@ -8,6 +8,9 @@ public class GitOwner {
     @SerializedName("id")
     @Expose
     private Integer id;
+    @SerializedName("login")
+    @Expose
+    private String login;
     @SerializedName("avatar_url")
     @Expose
     private String avatarUrl;
@@ -28,5 +31,11 @@ public class GitOwner {
         this.avatarUrl = avatarUrl;
     }
 
+    public String getLogin() {
+        return login;
+    }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
 }

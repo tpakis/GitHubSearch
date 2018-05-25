@@ -5,5 +5,8 @@
     <string name="error_fetching">Error fetching online images</string>
     <string name="error_no_results">No results for this query</string>
     <string name="owner_image">Owner image</string>
+    <string name="subscriber_image">Subscriber image</string>
+    <string name="no_subscribers">No Subscribers to show</string>
     <string name="fork_image">Number of forks</string>
+    <string name="subscibers_number">Subscribers: %1d</string>
 </resources>

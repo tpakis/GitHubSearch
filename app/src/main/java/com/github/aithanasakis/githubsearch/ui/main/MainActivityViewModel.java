@@ -70,4 +70,8 @@ public class MainActivityViewModel extends ViewModel{
     public LiveData<Resource<List<GitRepository>>> getRepositoriesListObservable() {
         return repositoriesListObservable;
     }
+
+    public MediatorLiveData<List<GitOwner>> getSubscribersListObservable() {
+        return subscribersListObservable;
+    }
 }

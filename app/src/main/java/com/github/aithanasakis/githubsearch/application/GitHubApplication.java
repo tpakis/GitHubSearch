@@ -14,29 +14,33 @@ import com.github.aithanasakis.githubsearch.di.RoomDbModule;
 
 import timber.log.Timber;
 
-public class GitHubApplication extends Application{
+public class GitHubApplication extends Application {
 
-    private AppComponent mAppComponent;
     private static Context context;
     private static GitHubApplication mApplication;
+    private AppComponent mAppComponent;
+
+    public static GitHubApplication getMyApplication() {
+        return mApplication;
+    }
 
     public void onCreate() {
         super.onCreate();
 
-        mApplication=this;
+        mApplication = this;
         GitHubApplication.context = getApplicationContext();
-        if (BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
             initializeStetho();
         }
         initDagger();
     }
 
-    public void  initializeStetho() {
+    public void initializeStetho() {
         Stetho.initializeWithDefaults(this);
     }
 
-    private void initDagger(){
+    private void initDagger() {
 
         mAppComponent = DaggerAppComponent.builder()
                 .retrofitModule(new RetrofitModule())
@@ -47,10 +51,6 @@ public class GitHubApplication extends Application{
 
     public AppComponent getMainActivityViewModelComponent() {
         return mAppComponent;
-    }
-
-    public static GitHubApplication getMyApplication() {
-        return mApplication;
     }
 
 }
